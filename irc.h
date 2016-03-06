@@ -69,6 +69,9 @@ typedef enum {
 typedef enum {
 	CAP_SASL = (1 << 0),
 	CAP_MULTI_PREFIX = (1 << 1),
+	CAP_EXTENDED_JOIN = (1 << 2),
+	CAP_AWAY_NOTIFY = (1 << 3),
+	CAP_USERHOST_IN_NAMES = (1 << 4),
 } irc_cap_flag_t;
 
 struct irc_user;
@@ -340,6 +343,7 @@ void irc_send_channel_user_mode_diff(irc_channel_t *ic, irc_user_t *iu,
                                      irc_channel_user_flags_t old_flags, irc_channel_user_flags_t new_flags);
 void irc_send_invite(irc_user_t *iu, irc_channel_t *ic);
 void irc_send_cap(irc_t *irc, char *subcommand, char *body);
+void irc_send_away_notify(irc_user_t *iu);
 
 /* irc_user.c */
 irc_user_t *irc_user_new(irc_t *irc, const char *nick);
@@ -353,6 +357,7 @@ void irc_user_quit(irc_user_t *iu, const char *msg);
 /* irc_util.c */
 char *set_eval_timezone(struct set *set, char *value);
 char *irc_format_timestamp(irc_t *irc, time_t msg_ts);
+char *set_eval_self_messages(struct set *set, char *value);
 
 /* irc_im.c */
 void bee_irc_channel_update(irc_t *irc, irc_channel_t *ic, irc_user_t *iu);

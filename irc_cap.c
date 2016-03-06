@@ -39,6 +39,9 @@ typedef struct {
 static const cap_info_t supported_caps[] = {
 	{"sasl", CAP_SASL},
 	{"multi-prefix", CAP_MULTI_PREFIX},
+	{"extended-join", CAP_EXTENDED_JOIN},
+	{"away-notify", CAP_AWAY_NOTIFY},
+	{"userhost-in-names", CAP_USERHOST_IN_NAMES},
 	{NULL},
 };
 
@@ -108,8 +111,8 @@ static gboolean irc_cmd_cap_req(irc_t *irc, char *caps)
 	return TRUE;
 }
 
-/* version can be "302" or NULL, but we don't need cap-3.2 for anything yet */
-static void irc_cmd_cap_ls(irc_t *irc, char *version)
+/* version can be 0, 302, 303, or garbage from user input. thanks user input */
+static void irc_cmd_cap_ls(irc_t *irc, long version)
 {
 	int i;
 	GString *str = g_string_sized_new(256);
@@ -119,6 +122,10 @@ static void irc_cmd_cap_ls(irc_t *irc, char *version)
 			g_string_append_c(str, ' ');
 		}
 		g_string_append(str, supported_caps[i].name);
+
+		if (version >= 302 && supported_caps[i].flag == CAP_SASL) {
+			g_string_append(str, "=PLAIN");
+		}
 	}
 
 	irc_send_cap(irc, "LS", str->str);
@@ -158,7 +165,7 @@ void irc_cmd_cap(irc_t *irc, char **cmd)
 	}
 
 	if (g_strcasecmp(cmd[1], "LS") == 0) {
-		irc_cmd_cap_ls(irc, cmd[2]);
+		irc_cmd_cap_ls(irc, cmd[2] ? strtol(cmd[2], NULL, 10) : 0);
 
 	} else if (g_strcasecmp(cmd[1], "LIST") == 0) {
 		irc_cmd_cap_list(irc);

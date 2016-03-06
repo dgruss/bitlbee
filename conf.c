@@ -139,8 +139,8 @@ conf_t *conf_load(int argc, char *argv[])
 			conf_free(conf);
 			return NULL;
 		} else if (opt == 'V') {
-			printf("BitlBee %s\nAPI version %06x\n",
-			       BITLBEE_VERSION, BITLBEE_VERSION_CODE);
+			printf("BitlBee %s\nAPI version %06x\nConfigure args: %s\n",
+			       BITLBEE_VERSION, BITLBEE_VERSION_CODE, BITLBEE_CONFIGURE_ARGS);
 			conf_free(conf);
 			return NULL;
 		} else if (opt == 'u') {
@@ -294,6 +294,8 @@ static int conf_loadini(conf_t *conf, char *file)
 					proxytype = PROXY_SOCKS4;
 				} else if (url->proto == PROTO_SOCKS5) {
 					proxytype = PROXY_SOCKS5;
+				} else if (url->proto == PROTO_SOCKS4A) {
+					proxytype = PROXY_SOCKS4A;
 				}
 
 				g_free(url);
